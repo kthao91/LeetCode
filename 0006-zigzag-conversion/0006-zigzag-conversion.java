@@ -1,39 +1,40 @@
 class Solution {
-    public String convert(String s, int numRows) {
-        // Edge case: if the number of rows is 1, return the original string immediately
-        if (numRows == 1 || s.length() <= numRows) {
+    public static String convert(String s, int numRows) {
+        int len = s.length();
+        
+        // Edge cases: if numRows is 1 or the string is shorter than the number of rows
+        if (numRows == 1 || numRows == len) {
             return s;
         }
 
-        // Create a list of StringBuilders, one for each row, and preallocate capacity
-        StringBuilder[] rows = new StringBuilder[numRows];
+        char[] ans = new char[len];  // Result array
+        int count = 0;  // Counter for placing characters in the result array
+        int inc = 2 * (numRows - 1);  // The main cycle length for zigzag
+
+        // Iterate over each row
         for (int i = 0; i < numRows; i++) {
-            rows[i] = new StringBuilder(s.length() / numRows + 1); // Pre-allocate size
-        }
+            int j = i;  // Start at the i-th index for the current row
 
-        // Initialize the current row and direction variables
-        int curRow = 0;
-        boolean goingDown = false;
-
-        // Traverse the string and place characters into appropriate rows
-        for (char c : s.toCharArray()) {
-            rows[curRow].append(c);
-
-            // Reverse direction when hitting the top or bottom row
-            if (curRow == 0 || curRow == numRows - 1) {
-                goingDown = !goingDown;
+            while (j < len) {
+                ans[count++] = s.charAt(j);  // Place character from current row
+                
+                // For the first and last row, jump by the cycle length (inc)
+                if (i == 0 || i == numRows - 1) {
+                    j += inc;
+                } 
+                // For the intermediate rows, calculate both down and diagonal jumps
+                else {
+                    j += (inc - (2 * i));  // First step (downward in the zigzag)
+                    
+                    if (j < len) {  // Check if within bounds
+                        ans[count++] = s.charAt(j);  // Place character
+                        j += (2 * i);  // Second step (upward in the zigzag)
+                    }
+                }
             }
-
-            // Update the current row based on direction
-            curRow += goingDown ? 1 : -1;
         }
 
-        // Concatenate all the rows into the final result
-        StringBuilder result = new StringBuilder(s.length()); // Pre-allocate capacity
-        for (StringBuilder row : rows) {
-            result.append(row);
-        }
-
-        return result.toString();
+        // Convert the character array back to a string and return the result
+        return new String(ans);
     }
 }
